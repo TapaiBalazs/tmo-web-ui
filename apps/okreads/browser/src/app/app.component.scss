@@ -19,16 +19,24 @@ h1 {
   padding: $spacing-3xs $spacing-xs;
 
   button {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: bold;
     padding: 0 $spacing-xs;
   }
 }
 
 .header--content {
+  align-items: center;
   display: flex;
 
   > * {
     display: flex;
     align-items: center;
+  }
+
+  > div {
+    align-self: flex-end;
   }
 }
 
