@@ -1,12 +1,20 @@
+import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ReplaySubject } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
-import { HttpTestingController } from '@angular/common/http/testing';
-
 import { SharedTestingModule } from '@tmo/shared/testing';
-import { ReadingListEffects } from './reading-list.effects';
+import { ReplaySubject } from 'rxjs';
 import * as ReadingListActions from './reading-list.actions';
+import { ReadingListEffects } from './reading-list.effects';
+
+const MOCK_SNACKBAR_REF = {
+  afterDismissed: jest.fn(),
+};
+
+const MOCK_SNACKBAR = {
+  open: jest.fn().mockReturnValue(MOCK_SNACKBAR_REF),
+};
 
 describe('ToReadEffects', () => {
   let actions: ReplaySubject<any>;
@@ -17,6 +25,10 @@ describe('ToReadEffects', () => {
     TestBed.configureTestingModule({
       imports: [SharedTestingModule],
       providers: [
+        {
+          provide: MatSnackBar,
+          useValue: MOCK_SNACKBAR,
+        },
         ReadingListEffects,
         provideMockActions(() => actions),
         provideMockStore(),

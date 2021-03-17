@@ -1,9 +1,17 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { MatSnackBar, MatSnackBarDismiss } from '@angular/material/snack-bar';
 import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
-import { of } from 'rxjs';
-import { catchError, concatMap, exhaustMap, map } from 'rxjs/operators';
-import { ReadingListItem } from '@tmo/shared/models';
+import { Book, ReadingListItem } from '@tmo/shared/models';
+import { Observable, of } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  exhaustMap,
+  filter,
+  map,
+  switchMap,
+} from 'rxjs/operators';
 import * as ReadingListActions from './reading-list.actions';
 
 @Injectable()
@@ -38,6 +46,25 @@ export class ReadingListEffects implements OnInitEffects {
     )
   );
 
+  confirmedAddedToReadingList$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ReadingListActions.confirmedAddToReadingList),
+      switchMap(({ book }) =>
+        this.openSnackBar('added', book).pipe(
+          filter(({ dismissedByAction }) => dismissedByAction),
+          map((_) =>
+            ReadingListActions.removeFromReadingList({
+              item: {
+                ...book,
+                bookId: (book as Book).id,
+              },
+            })
+          )
+        )
+      )
+    )
+  );
+
   removeBook$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ReadingListActions.removeFromReadingList),
@@ -54,9 +81,45 @@ export class ReadingListEffects implements OnInitEffects {
     )
   );
 
+  confirmedRemovedFromReadingList$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ReadingListActions.confirmedRemoveFromReadingList),
+      switchMap(({ item }) =>
+        this.openSnackBar('removed', item).pipe(
+          filter(({ dismissedByAction }) => dismissedByAction),
+          map((_) =>
+            ReadingListActions.addToReadingList({
+              book: (item as unknown) as Book,
+            })
+          )
+        )
+      )
+    )
+  );
+
+  constructor(
+    private actions$: Actions,
+    private http: HttpClient,
+    private snackbar: MatSnackBar
+  ) {}
+
   ngrxOnInitEffects() {
     return ReadingListActions.init();
   }
 
-  constructor(private actions$: Actions, private http: HttpClient) {}
+  private openSnackBar(
+    action: 'added' | 'removed',
+    item: Book | ReadingListItem
+  ): Observable<MatSnackBarDismiss> {
+    const snackbarRef = this.snackbar.open(
+      `${item.title} ${action}...`,
+      'Undo',
+      {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'bottom',
+      }
+    );
+    return snackbarRef.afterDismissed();
+  }
 }
