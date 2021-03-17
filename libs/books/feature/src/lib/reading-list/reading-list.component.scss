@@ -3,7 +3,9 @@
 :host {
   display: block;
   font-size: 0.75rem;
+  margin-bottom: $spacing-xs;
 }
+
 .reading-list {
   padding: $spacing-xxs;
 }
@@ -11,7 +13,6 @@
 .reading-list-item {
   display: flex;
   justify-content: center;
-  margin-bottom: $spacing-xs;
   width: 100%;
 
   > * {
@@ -31,6 +32,13 @@
   flex: 1;
   min-width: 0;
   margin-right: $spacing-xxs;
+}
+
+.reading-list-item--details--finished {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .reading-list-item--details--title,
