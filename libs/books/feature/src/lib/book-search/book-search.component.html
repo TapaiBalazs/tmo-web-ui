@@ -1,4 +1,4 @@
-<form [formGroup]="searchForm" (submit)="searchBooks()">
+<form [formGroup]="searchForm" (submit)="search.next()">
   <tmo-book-search-input></tmo-book-search-input>
 </form>
 
@@ -16,7 +16,7 @@
     <p>
       Try searching for a topic, for example "<button
         aria-label="search for JavaScript"
-        (click)="searchExample()"
+        (click)="searchBooks('javascript')"
       >
         JavaScript</button
       >".
