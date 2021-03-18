@@ -1,0 +1,29 @@
+<ng-container *ngIf="book">
+  <h2 tabindex="0" class="book--title">
+    {{ book.title }}
+  </h2>
+  <div class="book--content">
+    <div class="book--content--cover">
+      <img src="{{ book.coverUrl }}" />
+    </div>
+    <div class="book--content--info" [id]="book.id">
+      <div><strong>Author:</strong> {{ book.authors.join(',') }}</div>
+      <div><strong>Publisher:</strong> {{ book.publisher }}</div>
+      <div>
+        <strong>Published:</strong> {{ book.publishedDate | formatDate }}
+      </div>
+      <p [innerHTML]="book.description"></p>
+      <div>
+        <button
+          mat-flat-button
+          color="primary"
+          [attr.aria-describedby]="book.id"
+          (click)="addBookToReadingList(book)"
+          [disabled]="book.isAdded"
+        >
+          Want to Read <span class="visually-hidden">{{ book.title }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

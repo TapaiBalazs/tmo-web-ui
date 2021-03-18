@@ -1,0 +1,15 @@
+<ng-container [formGroup]="form">
+  <mat-form-field floatLabel="never">
+    <mat-label>Search for books to add to your reading list</mat-label>
+    <input
+      autoFocus
+      matInput
+      type="search"
+      name="search for books to add to your reading list"
+      formControlName="term"
+    />
+    <button mat-icon-button matSuffix aria-label="search books">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+</ng-container>
