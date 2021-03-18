@@ -61,6 +61,18 @@ const readingListReducer = createReducer(
       { bookId: action.item.bookId, ...action.item },
       state
     )
+  ),
+  on(ReadingListActions.confirmedToggleFinishedItem, (state, action) =>
+    readingListAdapter.updateOne(
+      {
+        id: action.item.bookId,
+        changes: {
+          finished: action.finished,
+          finishedDate: action.finishedDate,
+        },
+      },
+      state
+    )
   )
 );
 

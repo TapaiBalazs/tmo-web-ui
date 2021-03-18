@@ -1,9 +1,15 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
-import { of } from 'rxjs';
-import { catchError, concatMap, exhaustMap, map } from 'rxjs/operators';
 import { ReadingListItem } from '@tmo/shared/models';
+import { of } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  exhaustMap,
+  map,
+  switchMap,
+} from 'rxjs/operators';
 import * as ReadingListActions from './reading-list.actions';
 
 @Injectable()
@@ -54,9 +60,34 @@ export class ReadingListEffects implements OnInitEffects {
     )
   );
 
+  toggleFinishedItems$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ReadingListActions.toggleFinishedItem),
+      concatMap(({ item }) => {
+        const isFinished = !item.finished;
+        return this.http
+          .put<ReadingListItem>(`/api/reading-list/${item.bookId}/finished`, {
+            isFinished,
+          })
+          .pipe(
+            map(({ finished, finishedDate }) =>
+              ReadingListActions.confirmedToggleFinishedItem({
+                item,
+                finished,
+                finishedDate,
+              })
+            ),
+            catchError(() =>
+              of(ReadingListActions.failedToggleFinishedItem({ item }))
+            )
+          );
+      })
+    )
+  );
+
+  constructor(private actions$: Actions, private http: HttpClient) {}
+
   ngrxOnInitEffects() {
     return ReadingListActions.init();
   }
-
-  constructor(private actions$: Actions, private http: HttpClient) {}
 }

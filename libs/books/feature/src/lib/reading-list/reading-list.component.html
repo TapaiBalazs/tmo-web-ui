@@ -1,28 +1,53 @@
 <ng-container *ngIf="(readingList$ | async).length > 0; else empty">
-  <div class="reading-list-item" *ngFor="let book of readingList$ | async">
-    <div>
-      <img class="reading-list-item--cover" [src]="book.coverUrl" />
-    </div>
-    <div class="reading-list-item--details">
-      <strong class="reading-list-item--details--title">{{
-        book.title
-      }}</strong>
-      <div class="reading-list-item--details--author">
-        {{ book.authors.join(',') }}
+  <ng-container *ngFor="let book of readingList$ | async">
+    <div class="reading-list-item">
+      <div>
+        <img class="reading-list-item--cover" [src]="book.coverUrl" />
+      </div>
+      <div class="reading-list-item--details">
+        <strong class="reading-list-item--details--title">{{
+          book.title
+        }}</strong>
+        <div class="reading-list-item--details--author">
+          {{ book.authors.join(',') }}
+        </div>
+        <div *ngIf="book.finished" data-testing="finished-reading">
+          Finished reading on {{ book.finishedDate | date: 'shortDate' }}
+        </div>
+      </div>
+      <div>
+        <button
+          mat-icon-button
+          color="warn"
+          [attr.aria-label]="'Remove ' + book.title + ' from reading list'"
+          (click)="removeFromReadingList(book)"
+        >
+          <mat-icon>remove_circle</mat-icon>
+        </button>
       </div>
     </div>
-    <div>
+    <div class="reading-list-item--details--finished">
+      <p *ngIf="book.finished; else unFinished">
+        Have you not finished reading?
+      </p>
+      <ng-template #unFinished>
+        Have you finished reading?
+      </ng-template>
       <button
+        data-testing="update-finished"
+        (click)="updateFinished(book)"
         mat-icon-button
-        color="warn"
-        [attr.aria-label]="'Remove ' + book.title + ' from reading list'"
-        (click)="removeFromReadingList(book)"
       >
-        <mat-icon>remove_circle</mat-icon>
+        <mat-icon>
+          <ng-container *ngIf="book.finished; else unFinishedIcon"
+            >cancel</ng-container
+          >
+        </mat-icon>
       </button>
     </div>
-  </div>
+  </ng-container>
 </ng-container>
 <ng-template #empty>
   <p class="empty">You haven't added any books to your reading list yet.</p>
 </ng-template>
+<ng-template #unFinishedIcon>check</ng-template>

@@ -17,13 +17,19 @@
         <button
           mat-flat-button
           color="primary"
+          [attr.data-testing]="book.title"
           [attr.aria-describedby]="book.id"
           (click)="addBookToReadingList(book)"
           [disabled]="book.isAdded"
         >
-          Want to Read <span class="visually-hidden">{{ book.title }}</span>
+          <ng-container *ngIf="!book.finished; else finished"
+            >Want to Read</ng-container
+          >
+          <span class="visually-hidden">{{ book.title }}</span>
         </button>
       </div>
     </div>
   </div>
 </ng-container>
+
+<ng-template #finished>Finished</ng-template>
